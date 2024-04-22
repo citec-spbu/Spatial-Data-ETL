@@ -1,9 +1,13 @@
-russian_regions = ['Central Federal District', 'Crimean Federal District', 'Far Eastern Federal District', 'North Caucasus Federal District', 'Northwestern Federal District',
-                   'Siberian Federal District', 'South Federal District', 'Ural Federal District', 'Volga Federal District']
-file_format = ".pbf"
-data_dir = 'data'
-host = 'localhost'
-port = 5432
-username = 'postgres'
-password = None
-database_name = 'osmdb_test'
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+DB_HOST = os.environ.get("DB_HOST")
+DB_PORT = os.environ.get("DB_PORT")
+DB_NAME = os.environ.get("DB_NAME")
+DB_USER = os.environ.get("DB_USER")
+DB_PASS = os.environ.get("DB_PASS")
+DATA_DIR = os.environ.get("DATA_DIR")
+FILE_FORMAT = os.environ.get("FILE_FORMAT")
+REGIONS = os.environ.get("REGIONS").split(",")
