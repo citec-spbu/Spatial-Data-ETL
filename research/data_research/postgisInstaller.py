@@ -19,7 +19,7 @@ def checkPsqlVersion():
         commandPsqlInst = [
             'sudo',
             'apt',
-            'instll',
+            'install',
             'postgresql'
         ]
         try:
