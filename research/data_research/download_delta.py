@@ -1,3 +1,5 @@
+import datetime
+
 import urllib.request
 
 def download_state_file() -> tuple[int, str]:
@@ -19,7 +21,11 @@ def download_state_file() -> tuple[int, str]:
     with open("data/state.txt") as f:
         s = f.readlines()
         sequenceNumber = int(s[1].split("=")[1])
-        timestamp = s[2].split("=")[1].split('T')[0]
+        timestamp = s[2].split("=")[1]
+        timestamp = timestamp.strip()
+        timestamp = timestamp.replace("\\:", ":")
+        timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
+
 
     return sequenceNumber, timestamp
 
