@@ -31,12 +31,13 @@ def download_state_file_by_region_on_geofabric(region: str) -> tuple[int, str]:
     '''https://download.geofabrik.de/russia/volga-fed-district-updates/state.txt'''
     reg = region.split("/")[1]
 
-    if not os.path.exists(f"data/{reg}"):
-        os.makedirs(f"data/{reg}")
+    save_path = os.path.join('data', reg)
+
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
     
     try:
-        retry(f"https://download.geofabrik.de/{region}-updates/state.txt",
-                                           f"data/{reg}/state.txt")
+        retry(f"https://download.geofabrik.de/{region}-updates/state.txt", os.path.join(save_path, 'state.txt'))
     except Exception as e:
         print(e, "Error in downloading state file")
     
@@ -68,10 +69,12 @@ def download_delta_file_by_region_on_geofabric(region: str, sequenceNumber: int,
 
     formatted_timestamp = timestamp.strftime("%Y%m%d_%H%M%S")
 
+    save_path = os.path.join('data', 'delta', region)
+
     url = f"https://download.geofabrik.de/{region}-updates/{check_num(AAA)}/{check_num(BBB)}/{check_num(CCC)}.osc.gz"
-    if not os.path.exists(f"data/delta/{region}"):
-        os.makedirs(f"data/delta/{region}")
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
     try:
-        retry(url, f"data/delta/{region}/{formatted_timestamp}.osc.gz")
+        retry(url, os.path.join(save_path, f"{formatted_timestamp}.osc.gz"))
     except Exception as e:
         print(e, "Error in downloading delta file", url)

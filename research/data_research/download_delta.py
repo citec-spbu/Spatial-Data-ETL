@@ -12,8 +12,8 @@ def download_state_file() -> tuple[int, str]:
     Returns:
         tuple: A tuple containing the sequence number and timestamp extracted from the state file.
     """
-    if not os.path.exists(f"data"):
-        os.makedirs(f"data")
+    if not os.path.exists("data"):
+        os.makedirs("data")
 
     try:
         retry("https://planet.openstreetmap.org/replication/day/state.txt",
@@ -49,10 +49,12 @@ def download_delta_file(sequenceNumber: int, timestamp: str):
 
     url = f"https://planet.openstreetmap.org/replication/day/{check_num(AAA)}/{check_num(BBB)}/{check_num(CCC)}.osc.gz"
 
-    if not os.path.exists(f"data/delta"):
-        os.makedirs(f"data/delta")
+    save_path = os.path.join('data', 'delta')
+
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
     try:
-        retry(url, f"data/delta/{timestamp}.osc.gz")
+        retry(url, os.path.join(save_path, f"{timestamp}.osc.gz"))
     except Exception as e:
         print(e, "Error in downloading delta file")
         
