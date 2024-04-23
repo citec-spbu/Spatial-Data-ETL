@@ -1,2 +1,1 @@
 pydriosm
-python-dotenv
