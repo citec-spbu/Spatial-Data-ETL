@@ -1,8 +1,6 @@
-import urllib.request
 import datetime
 from utils import check_num, retry
 import os
-import time
 
 
 def download_state_file_by_region_on_geofabric(region: str) -> tuple[int, str]:

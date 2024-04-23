@@ -1,4 +1,3 @@
-import urllib.request
 import datetime
 from utils import check_num, retry
 import os
