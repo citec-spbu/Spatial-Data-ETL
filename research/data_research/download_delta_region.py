@@ -1,7 +1,8 @@
 import urllib.request
 import datetime
-from utils import check_num
+from utils import check_num, retry
 import os
+import time
 
 
 def download_state_file_by_region_on_geofabric(region: str) -> tuple[int, str]:
@@ -31,21 +32,23 @@ def download_state_file_by_region_on_geofabric(region: str) -> tuple[int, str]:
     """
     '''https://download.geofabrik.de/russia/volga-fed-district-updates/state.txt'''
     reg = region.split("/")[1]
+
+    if not os.path.exists(f"data/{reg}"):
+        os.makedirs(f"data/{reg}")
+    
     try:
-        if not os.path.exists(f"data/{reg}"):
-            os.makedirs(f"data/{reg}")
-        urllib.request.urlretrieve(f"https://download.geofabrik.de/{region}-updates/state.txt",
-                                f"data/{reg}/state.txt")
+        retry(f"https://download.geofabrik.de/{region}-updates/state.txt",
+                                           f"data/{reg}/state.txt")
     except Exception as e:
         print(e, "Error in downloading state file")
     
     with open(f"data/{reg}/state.txt") as f:
         s = f.readlines()
-        sequenceNumber = int(s[2].split("=")[1])
-        timestamp = s[1].split("=")[1]
-        timestamp = timestamp.strip()
-        timestamp = timestamp.replace("\\:", ":")
-        timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
+    sequenceNumber = int(s[2].split("=")[1])
+    timestamp = s[1].split("=")[1]
+    timestamp = timestamp.strip()
+    timestamp = timestamp.replace("\\:", ":")
+    timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
 
     return sequenceNumber, timestamp
 
@@ -68,9 +71,9 @@ def download_delta_file_by_region_on_geofabric(region: str, sequenceNumber: int,
     formatted_timestamp = timestamp.strftime("%Y%m%d_%H%M%S")
 
     url = f"https://download.geofabrik.de/{region}-updates/{check_num(AAA)}/{check_num(BBB)}/{check_num(CCC)}.osc.gz"
+    if not os.path.exists(f"data/delta/{region}"):
+        os.makedirs(f"data/delta/{region}")
     try:
-        if not os.path.exists(f"data/delta/{region}"):
-            os.makedirs(f"data/delta/{region}")
-        urllib.request.urlretrieve(url, f"data/delta/{region}/{formatted_timestamp}.osc.gz")
+        retry(url, f"data/delta/{region}/{formatted_timestamp}.osc.gz")
     except Exception as e:
         print(e, "Error in downloading delta file", url)
