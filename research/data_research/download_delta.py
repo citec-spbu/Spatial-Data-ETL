@@ -1,6 +1,6 @@
-import datetime
-
 import urllib.request
+import datetime
+from utils import check_num
 
 def download_state_file() -> tuple[int, str]:
     """
@@ -26,18 +26,8 @@ def download_state_file() -> tuple[int, str]:
         timestamp = timestamp.replace("\\:", ":")
         timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
 
-
     return sequenceNumber, timestamp
 
-
-def check_num(num):
-    if num == 0:
-        return "000"
-    if 10 <= num < 100:
-        return "0" + str(num)
-    if num < 10:
-        return "00" + str(num)
-    return str(num)
 
 def download_delta_file(sequenceNumber: int, timestamp: str):
     """
@@ -59,3 +49,4 @@ def download_delta_file(sequenceNumber: int, timestamp: str):
         urllib.request.urlretrieve(url, f"data/delta/{timestamp}.osc.gz")
     except Exception as e:
         print(e, "Error in downloading delta file")
+        
