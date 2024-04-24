@@ -1,5 +1,5 @@
 import datetime
-from utils import check_num, retry
+from utils import check_num, retry, get_sequence_number_and_timestamp_from_state_file, convert_sequence_number
 import os
 from collect_deltes import logger
 
@@ -14,16 +14,12 @@ def get_last_info_state(region: str) -> tuple[int, datetime.datetime] | tuple[No
         tuple[int, datetime.datetime] | tuple[None, None]: A tuple containing the sequence number and timestamp
         of the last information state for the region. If the state file does not exist, returns (None, None).
     """
-    if not os.path.exists(f"data/{region}/state.txt"):
+    save_path = os.path.join('data', region, 'state.txt')
+
+    if not os.path.exists(save_path):
         return None, None
     
-    with open(f"data/{region}/state.txt") as f:
-        s = f.readlines()
-    sequenceNumber = int(s[2].split("=")[1])
-    timestamp = s[1].split("=")[1]
-    timestamp = timestamp.strip().replace("\\:", ":")
-    timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
-    return sequenceNumber, timestamp
+    return get_sequence_number_and_timestamp_from_state_file(save_path)
 
 
 def download_state_file_by_region_on_geofabric(region: str) -> tuple[int, datetime.datetime]:
@@ -36,22 +32,6 @@ def download_state_file_by_region_on_geofabric(region: str) -> tuple[int, dateti
     Returns:
         tuple: A tuple containing the sequence number and timestamp extracted from the state file.
     """
-
-    """
-    Russia
-    russia/central-fed-district
-    central-fed-district
-    crimean-fed-district
-    far-eastern-fed-district
-    kaliningrad
-    north-caucasus-fed-district
-    northwestern-fed-district
-    siberian-fed-district
-    south-fed-district
-    ural-fed-district
-    volga-fed-district
-    """
-    '''https://download.geofabrik.de/russia/volga-fed-district-updates/state.txt'''
     reg = region.split("/")[1]
 
     save_path = os.path.join('data', reg)
@@ -63,15 +43,8 @@ def download_state_file_by_region_on_geofabric(region: str) -> tuple[int, dateti
         retry(f"https://download.geofabrik.de/{region}-updates/state.txt", os.path.join(save_path, 'state.txt'))
     except Exception as e:
         logger.error(f"{e} Error in downloading state file")
-    
-    with open(os.path.join(save_path, 'state.txt')) as f:
-        s = f.readlines()
-    sequenceNumber = int(s[2].split("=")[1])
-    timestamp = s[1].split("=")[1]
-    timestamp = timestamp.strip().replace("\\:", ":")
-    timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
 
-    return sequenceNumber, timestamp
+    return get_sequence_number_and_timestamp_from_state_file(os.path.join(save_path, 'state.txt'))
 
 def download_delta_file_by_region_on_geofabric(region: str, sequenceNumber: int, timestamp: str):
     """
@@ -85,9 +58,7 @@ def download_delta_file_by_region_on_geofabric(region: str, sequenceNumber: int,
     Returns:
         None
     """
-    AAA = sequenceNumber // 1000000
-    BBB = sequenceNumber // 1000 - AAA * 1000
-    CCC = sequenceNumber - AAA * 1000000 - BBB * 1000
+    AAA, BBB, CCC = convert_sequence_number(sequenceNumber)
 
     formatted_timestamp = timestamp.strftime("%Y%m%d_%H%M%S")
 
