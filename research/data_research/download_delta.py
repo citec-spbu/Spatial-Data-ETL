@@ -1,8 +1,8 @@
 import datetime
-from utils import check_num, retry
+from utils import check_num, retry, get_sequence_number_and_timestamp_from_state_file, convert_sequence_number
 import os
 
-def download_state_file() -> tuple[int, datetime.datetime]:
+def download_state_file_country(country: str) -> tuple[int, datetime.datetime]:
     """
     Downloads the state file from the OpenStreetMap replication server and retrieves the sequence number and timestamp.
 
@@ -16,23 +16,15 @@ def download_state_file() -> tuple[int, datetime.datetime]:
         os.makedirs("data")
 
     try:
-        retry("https://planet.openstreetmap.org/replication/day/state.txt",
-                                "data/state.txt")
+        retry(f"https://download.geofabrik.de/{country}-updates/",
+                                f"data/{country}/state.txt")
     except Exception as e:
         print(e, "Error in downloading state file")
 
-    with open("data/state.txt") as f:
-        s = f.readlines()
-    sequenceNumber = int(s[1].split("=")[1])
-    timestamp = s[2].split("=")[1]
-    timestamp = timestamp.strip()
-    timestamp = timestamp.replace("\\:", ":")
-    timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
-
-    return sequenceNumber, timestamp
+    return get_sequence_number_and_timestamp_from_state_file(f"data/{country}/state.txt")
 
 
-def download_delta_file(sequenceNumber: int, timestamp: str):
+def download_delta_file_country(country: str, sequenceNumber: int, timestamp: str):
     """
     A function to download the delta file based on the sequence number and timestamp.
 
@@ -43,13 +35,11 @@ def download_delta_file(sequenceNumber: int, timestamp: str):
     Returns:
         None
     """
-    AAA = sequenceNumber // 1000000
-    BBB = sequenceNumber // 1000 - AAA * 1000
-    CCC = sequenceNumber - AAA * 1000000 - BBB * 1000
+    AAA, BBB, CCC = convert_sequence_number(sequenceNumber)
 
-    url = f"https://planet.openstreetmap.org/replication/day/{check_num(AAA)}/{check_num(BBB)}/{check_num(CCC)}.osc.gz"
+    url = f"https://download.geofabrik.de/{country}-updates/{check_num(AAA)}/{check_num(BBB)}/{check_num(CCC)}.osc.gz"
 
-    save_path = os.path.join('data', 'delta')
+    save_path = os.path.join('data', country, 'delta')
 
     if not os.path.exists(save_path):
         os.makedirs(save_path)
