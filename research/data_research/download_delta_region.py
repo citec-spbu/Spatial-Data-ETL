@@ -3,7 +3,7 @@ from utils import check_num, retry
 import os
 
 
-def download_state_file_by_region_on_geofabric(region: str) -> tuple[int, str]:
+def download_state_file_by_region_on_geofabric(region: str) -> tuple[int, datetime.datetime]:
     """
     Downloads the state file from the OpenStreetMap replication server and retrieves the sequence number and timestamp.
 
