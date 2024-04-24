@@ -2,6 +2,15 @@ import datetime
 from utils import check_num, retry
 import os
 
+def get_last_info_state(region: str) -> tuple[int, datetime.datetime]:
+    with open(f"data/{region}/state.txt") as f:
+        s = f.readlines()
+    sequenceNumber = int(s[2].split("=")[1])
+    timestamp = s[1].split("=")[1]
+    timestamp = timestamp.strip().replace("\\:", ":")
+    timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
+    return sequenceNumber, timestamp
+
 
 def download_state_file_by_region_on_geofabric(region: str) -> tuple[int, datetime.datetime]:
     """
@@ -45,8 +54,7 @@ def download_state_file_by_region_on_geofabric(region: str) -> tuple[int, dateti
         s = f.readlines()
     sequenceNumber = int(s[2].split("=")[1])
     timestamp = s[1].split("=")[1]
-    timestamp = timestamp.strip()
-    timestamp = timestamp.replace("\\:", ":")
+    timestamp = timestamp.strip().replace("\\:", ":")
     timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
 
     return sequenceNumber, timestamp
