@@ -7,6 +7,15 @@ from config import DAY_DELTA
 from download_delta_region import download_state_file_by_region_on_geofabric, download_delta_file_by_region_on_geofabric, get_last_info_state
 
 def collect_delta(region: str):
+    """
+    Collects delta files for a given region.
+
+    Args:
+        region (str): The region for which delta files need to be collected.
+
+    Returns:
+        None
+    """
     logging.info(f"Collecting delta REGION: {region}; TIME: {time.time()}")
 
     sequenceNumber_last, timestamp_last = get_last_info_state(region)
@@ -22,6 +31,15 @@ def collect_delta(region: str):
 
 
 def collect_delta_regions(regions: list):
+    """
+    Collects delta regions by iterating over the given list of regions and calling the collect_delta function for each region.
+
+    Args:
+        regions (list): A list of regions to collect delta for.
+
+    Returns:
+        None
+    """
     for region in regions:
         collect_delta(region)
 

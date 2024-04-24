@@ -3,6 +3,16 @@ from utils import check_num, retry
 import os
 
 def get_last_info_state(region: str) -> tuple[int, datetime.datetime] | tuple[None, None]:
+    """
+    Retrieves the last information state for a given region.
+
+    Args:
+        region (str): The name of the region.
+
+    Returns:
+        tuple[int, datetime.datetime] | tuple[None, None]: A tuple containing the sequence number and timestamp
+        of the last information state for the region. If the state file does not exist, returns (None, None).
+    """
     if not os.path.exists(f"data/{region}/state.txt"):
         return None, None
     
