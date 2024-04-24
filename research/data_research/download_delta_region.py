@@ -2,7 +2,10 @@ import datetime
 from utils import check_num, retry
 import os
 
-def get_last_info_state(region: str) -> tuple[int, datetime.datetime]:
+def get_last_info_state(region: str) -> tuple[int, datetime.datetime] | tuple[None, None]:
+    if not os.path.exists(f"data/{region}/state.txt"):
+        return None, None
+    
     with open(f"data/{region}/state.txt") as f:
         s = f.readlines()
     sequenceNumber = int(s[2].split("=")[1])

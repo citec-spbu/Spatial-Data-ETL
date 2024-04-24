@@ -10,8 +10,12 @@ def collect_delta(region: str):
     logging.info(f"Collecting delta REGION: {region}; TIME: {time.time()}")
 
     sequenceNumber_last, timestamp_last = get_last_info_state(region)
-
+    
     sequenceNumber, timestamp = download_state_file_by_region_on_geofabric(region)
+
+    if sequenceNumber_last is None:
+        download_delta_file_by_region_on_geofabric(region, sequenceNumber, timestamp)
+        return
 
     for i in range(sequenceNumber_last + 1, sequenceNumber + 1):
         download_delta_file_by_region_on_geofabric(region, i, timestamp)
