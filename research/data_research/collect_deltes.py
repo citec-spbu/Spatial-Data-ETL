@@ -47,7 +47,7 @@ def collect_delta_regions(regions: list):
 schedule.every(DAY_DELTA).days.at("08:00").do(collect_delta_regions, REGIONS)
 
 logging.basicConfig(level=logging.INFO, filename='app.log', format='%(asctime)s - %(levelname)s - %(message)s')
-
+logger = logging.getLogger(__name__)
 
 while True:
     schedule.run_pending()

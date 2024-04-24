@@ -1,6 +1,7 @@
 import datetime
 from utils import check_num, retry
 import os
+from collect_deltes import logger
 
 def get_last_info_state(region: str) -> tuple[int, datetime.datetime] | tuple[None, None]:
     """
@@ -61,7 +62,7 @@ def download_state_file_by_region_on_geofabric(region: str) -> tuple[int, dateti
     try:
         retry(f"https://download.geofabrik.de/{region}-updates/state.txt", os.path.join(save_path, 'state.txt'))
     except Exception as e:
-        print(e, "Error in downloading state file")
+        logger.error(f"{e} Error in downloading state file")
     
     with open(os.path.join(save_path, 'state.txt')) as f:
         s = f.readlines()
@@ -98,4 +99,4 @@ def download_delta_file_by_region_on_geofabric(region: str, sequenceNumber: int,
     try:
         retry(url, os.path.join(save_path, f"{formatted_timestamp}.osc.gz"))
     except Exception as e:
-        print(e, "Error in downloading delta file", url)
+        logger.error(f"{e} Error in downloading delta file {url}")
