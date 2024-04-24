@@ -63,7 +63,7 @@ def download_state_file_by_region_on_geofabric(region: str) -> tuple[int, dateti
     except Exception as e:
         print(e, "Error in downloading state file")
     
-    with open(f"data/{reg}/state.txt") as f:
+    with open(os.path.join(save_path, 'state.txt')) as f:
         s = f.readlines()
     sequenceNumber = int(s[2].split("=")[1])
     timestamp = s[1].split("=")[1]
