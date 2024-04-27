@@ -15,7 +15,7 @@ cd $baseDir
 sudo apt-get -y --allow-change-held-packages --allow-remove-essential update
 res=$(pg_config --version)
 re='[[:digit:]][[:digit:]]\.*'
-sudo apt install -y --allow-change-held-packages --allow-remove-essential postgis postgresql-14-postgis-3
+sudo apt -y --allow-change-held-packages --allow-remove-essential install postgis postgresql-14-postgis-3
 fPath=$(sudo find /etc/postgresql -name 'pg_hba.conf')
 sudo sed -i -e 's/md5/trust/g' $fPath
 sudo sed -i -e 's/peer/trust/g' $fPath
