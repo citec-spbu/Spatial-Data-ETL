@@ -5,11 +5,10 @@ DB_NAME=$(echo "${DB_NAME,,}")
 PGPASSWORD=$DB_PSWD
 baseDir=$(pwd)
 cd ~
-echo "$HOST:$PORT:$DB_NAME:$DB_USER:$DB_PSWD" >> .pgpass
+echo $DB_HOST:$DB_PORT:*:$DB_USER:$DB_PSWD%> .pgpass
 chmod 600 ~/.pgpass
 cd $baseDir
-cd ..
-cd data
+cd ../data
 dataDir=$(pwd)
 sudo wget -O $PBF_NAME $LINK
 cd $baseDir
@@ -28,14 +27,13 @@ for word in $res; do
 done
 
 fPath=$(sudo find /etc/postgresql -name 'pg_hba.conf')
-sudo sed -i -e 's/md5/peer/g' $fPath
+sudo sed -i -e 's/md5/trust/g' $fPath
+sudo sed -i -e 's/peer/trust/g' $fPath
 sudo service postgresql restart
 sleep 15s
 sudo apt install postgis postgresql-$psqlVer-postgis-3
 sudo -u postgres psql -c "create database $DB_NAME;"
 sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis;"
-sudo sed -i -e 's/peer/md5/g' $fPath
-sudo systemctl restart postgresql
 sudo apt install osm2pgsql
 cd $dataDir
 osm2pgsql -U $DB_USER -l -d $DB_NAME $PBF_NAME
