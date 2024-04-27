@@ -12,10 +12,10 @@ cd ../data
 dataDir=$(pwd)
 sudo wget -O $PBF_NAME $LINK
 cd $baseDir
-sudo apt-get --yes --force-yes update
+sudo apt-get -y --allow-change-held-packages --allow-remove-essential update
 res=$(pg_config --version)
 re='[[:digit:]][[:digit:]]\.*'
-sudo apt install postgis postgresql-14-postgis-3
+sudo apt install -y --allow-change-held-packages --allow-remove-essential postgis postgresql-14-postgis-3
 fPath=$(sudo find /etc/postgresql -name 'pg_hba.conf')
 sudo sed -i -e 's/md5/trust/g' $fPath
 sudo sed -i -e 's/peer/trust/g' $fPath
