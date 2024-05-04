@@ -11,7 +11,7 @@ def run_osm2pgsql(
         username: str,
         db_name: str,
         host: str,
-        pbf_file_name: str,
+        pbf_file_path: str,
 ):
     # Определяем команду и параметры
     command = [
@@ -21,7 +21,7 @@ def run_osm2pgsql(
         '-l',
         '-d', db_name,
         '-H', host,
-        pbf_file_name,
+        pbf_file_path,
     ]
 
     # Запускаем процесс
@@ -34,23 +34,27 @@ def run_osm2pgsql(
         logger.info(f"Ошибка: {e}")
 
 
-def download_raw_file_with_url(url: str, name: str):
-    urllib.request.urlretrieve(url, name)
+def download_raw_file_with_url(url: str, path: str):
+    urllib.request.urlretrieve(url, path)
 
 
 if __name__ == "__main__":
     _username = config.DB_USER
     _db_name = config.DB_NAME
     _host = config.DB_HOST
-    _pbf_file_name = 'raw.osm.pbf'
+
+    pbf_file_name = "raw.osm.pbf"
+    data_dir_path = "data"
+
+    raw_pbf_file_path = f"{data_dir_path}/{pbf_file_name}"
 
     _download_url = f"https://download.geofabrik.de/{config.REGIONS[0]}/{config.FILE_TO_DOWNLOAD}"
 
-    download_raw_file_with_url(_download_url, _pbf_file_name)
+    download_raw_file_with_url(_download_url, raw_pbf_file_path)
 
     run_osm2pgsql(
         username=_username,
         db_name=_db_name,
         host=_host,
-        pbf_file_name=_pbf_file_name,
+        pbf_file_path=raw_pbf_file_path,
     )
