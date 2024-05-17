@@ -12,21 +12,12 @@ while IFS= read -r line || [[ -n "$line" ]]; do
     if [[ -z "$line" ]]; then
         break
     fi
-    OIFS=$IFS
-    wordsArr=$(echo ${line} | awk -F'/' '{print $5}')
-    words=$(echo $wordsArr | tr "-" "\n")
-    name=""
-    for word in $words;
-    do
-        if [[ $word == "fed" ]]; then
-            break
-        fi
-        name="${name}${word}-"
-    done
-    IFS=$OIFS
-    newUrl="https://download.geofabrik.de/russia/"$name"fed-district-updates/"
-    echo $newUrl
+    source "${baseDir}/src/nameParse.sh"
+    nameState="${name}_state.txt"
+    mv $nameState "state.txt"
+    newUrl=$(echo $line | sed "s/-[a-zA-Z0-9_]*.osm.pbf/-updates\//")
     sed -i "/^baseUrl=/c\baseUrl=$newUrl" configuration.txt
     osmosis --read-replication-interval workingDirectory="${deltDir}" --simplify-change --write-xml-change - | \
     osm2pgsql --append -r xml -s -C 300 -G --hstore --style openstreetmap-carto.style --tag-transform-script openstreetmap-carto.lua -d $DB_NAME -U $DB_USER -
+    mv "state.txt" $nameState
 done < ../src/links.config

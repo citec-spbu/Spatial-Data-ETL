@@ -1,5 +1,4 @@
 #!/bin/bash
-
 source spatial.config
 DB_NAME=$(echo "${DB_NAME,,}")
 PGPASSWORD=$DB_PSWD
@@ -25,27 +24,20 @@ sleep 15s
 sudo -u postgres psql -c "create database $DB_NAME;"
 sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis;"
 sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION hstore;"
-cd $deltDir
-#У регионов одинаковый state.txt, поэтому можно любой поставить
-sudo wget -O state.txt https://download.geofabrik.de/russia/central-fed-district-updates/state.txt
-cd $dataDir
 while IFS= read -r line || [[ -n "$line" ]]; do
+    OIFS=$IFS
+    line=$(echo "$line" | sed 's/\r$//')
     if [[ -z "$line" ]]; then
         break
     fi
-    line=$(echo "$line" | sed 's/\r$//')
-    wordsArr=$(echo ${line} | awk -F'/' '{print $5}')
-    words=$(echo $wordsArr | tr "-" "\n")
-    name=""
-    for word in $words;
-    do
-        if [[ $word == "fed" ]]; then
-            break
-        fi
-        name="${name}${word}-"
-    done
-    name=${name%?}
-    nameFile=$"$name.osm.pbf"
+    stateUrl=$(echo $line | sed "s/-[a-zA-Z0-9_]*.osm.pbf/-updates\/state.txt/")  
+    source "${baseDir}/nameParse.sh"
+    nameState="${name}_state.txt"
+    cd $deltDir
+    sudo wget -O $nameState $stateUrl
+    nameFile=$"${name}.osm.pbf"
+    cd $dataDir
     sudo wget -O $nameFile $line
     osm2pgsql -U $DB_USER -p $name -l -d $DB_NAME $nameFile
+    IFS=$OIFS
 done < ../src/links.config
