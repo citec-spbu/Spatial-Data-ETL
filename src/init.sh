@@ -16,6 +16,10 @@ sudo apt-get -y --allow-change-held-packages --allow-remove-essential update
 sudo apt -y --allow-change-held-packages --allow-remove-essential install postgis postgresql-14-postgis-3
 sudo apt -y --allow-change-held-packages --allow-remove-essential install osm2pgsql
 sudo apt-get -y install osmosis
+sudo apt -y install software-properties-common
+sudo add-apt-repository -ppa:deadsnakes/ppa -y
+sudo apt -y --allow-change-held-packages --allow-remove-essential install python3
+sudo apt -y --allow-change-held-packages --allow-remove-essential install python3-pip
 fPath=$(sudo find /etc/postgresql -name 'pg_hba.conf')
 sudo sed -i -e 's/md5/trust/g' $fPath
 sudo sed -i -e 's/peer/trust/g' $fPath
@@ -41,3 +45,9 @@ while IFS= read -r line || [[ -n "$line" ]]; do
     osm2pgsql -U $DB_USER -p $name -l -d $DB_NAME $nameFile
     IFS=$OIFS
 done < ../src/links.config
+export AIRFLOW_HOME=~/airflow
+AIRFLOW_VERSION=2.9.1
+PYTHON_VERSION="$(python -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')"
+CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"
+pip install "apache-airflow==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"
+airflow standalone
