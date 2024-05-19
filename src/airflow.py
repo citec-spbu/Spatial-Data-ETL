@@ -24,7 +24,7 @@ dag = DAG(
 # Оператор для запуска скрипта delta_update
 run_delta_update = BashOperator(
     task_id='run_delta_update',
-    bash_command='/home/user/Spatial-Data-ETL/src/delt.sh',
+    bash_command='cd / && /home/user/Spatial-Data-ETL/src/delt.sh',
     dag=dag,
 )
 

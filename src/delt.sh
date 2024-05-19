@@ -1,4 +1,6 @@
 #!/bin/bash
+scriptDir=$(dirname "$0")
+cd $scriptDir
 source spatial.config
 cd ..
 baseDir=$(pwd)
