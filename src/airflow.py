@@ -20,7 +20,7 @@ def update():
 
     @task.bash
     def delta_update() -> str:
-        cmd = '~airflow/dags/scripts/delt.sh '
+        cmd = '~/Spatial-Data-ETL/src/delt.sh '
 
         logging.info(f'Running command: {cmd}')
 
