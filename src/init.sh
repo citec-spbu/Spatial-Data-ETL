@@ -9,10 +9,12 @@ chmod 600 ~/.pgpass
 cd $baseDir
 cd ..
 deltDir="$(pwd)/deltas"
+aflwDir="$(pwd)/airflow"
 cd data
 dataDir=$(pwd)
 cd $baseDir
 sudo apt-get -y --allow-change-held-packages --allow-remove-essential update
+sudo apt install -y wget
 sudo apt -y --allow-change-held-packages --allow-remove-essential install postgis postgresql-14-postgis-3
 sudo apt -y --allow-change-held-packages --allow-remove-essential install osm2pgsql
 sudo apt-get -y install osmosis
@@ -45,9 +47,10 @@ while IFS= read -r line || [[ -n "$line" ]]; do
     osm2pgsql -U $DB_USER -p $name -l -d $DB_NAME $nameFile
     IFS=$OIFS
 done < ../src/links.config
-export AIRFLOW_HOME=~/airflow
+export AIRFLOW_HOME=$aflwDir
 AIRFLOW_VERSION=$"2.9.1"
 PYTHON_VERSION="$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')"
 CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"
 sudo pip install "apache-airflow==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"
+mv "airflow.py" "${aflwDir}/dags"
 airflow standalone
