@@ -52,5 +52,9 @@ AIRFLOW_VERSION=$"2.9.1"
 PYTHON_VERSION="$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')"
 CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"
 sudo pip install "apache-airflow==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"
-mv "airflow.py" "${aflwDir}/dags"
+cd $baseDir
+cd ..
+mkdir -p airflow/dags
+cd $baseDir
+mv "airflow.py" "${aflwDir}/dags/deltDAG.py"
 airflow standalone
