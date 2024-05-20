@@ -1,13 +1,8 @@
 #!/bin/bash
-
-file=$"/etc/loglocation.sh"
-dir=$(dirname "$0")
-if [ -e $file ]; then
-    echo "export SPATIAL_DATA_ETL_HOME=${dir}" >> $file
-elses
-    echo "export SPATIAL_DATA_ETL_HOME=${dir}" | sudo tee -a $file
-fi
+dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd src
+path="${dir}/src/delt.sh "
+sed -i -e "s|PATH_TO_SCRIPT|$path|g" /airflow.py
 sudo chmod +x init.sh
 sudo chmod +x delt.sh
 sudo chmod +x newFile.sh

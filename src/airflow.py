@@ -20,8 +20,8 @@ def update():
 
     @task.bash
     def delta_update() -> str:
-        cmd = '/etc/loglocation.sh && ${SPATIAL_DATA_ETL_HOME}/src/delt.sh '
-
+        cmd = 'PATH_TO_SCRIPT'
+        
         logging.info(f'Running command: {cmd}')
 
         return cmd

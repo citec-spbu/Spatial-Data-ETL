@@ -1,6 +1,4 @@
 #!/bin/bash
-scriptDir=$(dirname "$0")
-cd $scriptDirs
 source spatial.config
 DB_NAME=$(echo "${DB_NAME,,}")
 PGPASSWORD=$DB_PSWD
