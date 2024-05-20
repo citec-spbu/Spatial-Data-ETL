@@ -15,13 +15,13 @@ default_args = {
     'retry_delay': timedelta(seconds=5),
 }
 
-@dag(default_args=default_args, schedule_interval=None, catchup=False)
+@dag(default_args=default_args, schedule_interval=timedelta(days=1), catchup=False)
 def update():
 
     @task.bash
     def delta_update() -> str:
-        cmd = '~/Spatial-Data-ETL/src/delt.sh '
-
+        cmd = 'PATH_TO_SCRIPT'
+        
         logging.info(f'Running command: {cmd}')
 
         return cmd
