@@ -30,6 +30,7 @@ sleep 15s
 sudo -u postgres psql -c "create database $DB_NAME;"
 sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis;"
 sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION hstore;"
+source "ghsl.sh"
 while IFS= read -r line || [[ -n "$line" ]]; do
     OIFS=$IFS
     line=$(echo "$line" | sed 's/\r$//')
